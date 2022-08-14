@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from unit import BaseUnit
 
-class Skill(ABC):
+
+class BaseSkill(ABC):
     """
     Базовый класс умения
     """
@@ -14,31 +15,28 @@ class Skill(ABC):
 
     @property
     @abstractmethod
-    def name(self):
+    def name(self) -> str:
         pass
 
     @property
     @abstractmethod
-    def stamina(self):
+    def stamina(self) -> float:
         pass
 
     @property
     @abstractmethod
-    def damage(self):
+    def damage(self) -> float:
         pass
 
     @abstractmethod
     def skill_effect(self) -> str:
         pass
 
-    def _is_stamina_enough(self):
+    def _is_stamina_enough(self) -> bool:
         return self.user.stamina > self.stamina
 
     def use(self, user: BaseUnit, target: BaseUnit) -> str:
-        """
-        Проверка, достаточно ли выносливости у игрока для применения умения.
-        Для вызова скилла везде используем просто use
-        """
+        """ Проверка, достаточно ли выносливости у игрока для применения умения. """
         self.user = user
         self.target = target
         if self._is_stamina_enough:
@@ -46,23 +44,26 @@ class Skill(ABC):
         return f"{self.user.name} попытался использовать {self.name} но у него не хватило выносливости."
 
 
-class FuryPunch(Skill):
-    name = ...
-    stamina = ...
-    damage = ...
+class The_magic_pendel(BaseSkill):
+    name: str = 'Волшебный пендель'
+    damage: float = 12.0
+    stamina: float = 6.0
 
     def skill_effect(self):
-        # TODO логика использования скилла -> return str
-        # TODO в классе нам доступны экземпляры user и target - можно использовать любые их методы
-        # TODO именно здесь происходит уменшение стамины у игрока применяющего умение и
-        # TODO уменьшение здоровья цели.
-        # TODO результат применения возвращаем строкой
-        pass
+        """Функция применения skill effect"""
+        self.user.stamina -= self.stamina
+        self.target.get_damage(self.damage)
+        return f'{self.user.name} использует {self.name} и наносит {self.damage} ' \
+               f'урона противнику.'
 
-class HardShot(Skill):
-    name = ...
-    stamina = ...
-    damage = ...
+
+class Knife_in_the_side(BaseSkill):
+    name: str = 'Нож в бочину'
+    damage: float = 15.0
+    stamina: float = 5.5
 
     def skill_effect(self):
-        pass
+        """Функция применения skill effect"""
+        self.user.stamina -= self.stamina
+        self.target.get_damage(self.damage)
+        return f'{self.user.name} использует {self.name} и наносит {self.damage} урона противнику.'
